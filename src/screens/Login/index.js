@@ -12,47 +12,109 @@ import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ms} from 'react-native-size-matters';
 import {navigate} from '../../helpers/navigation';
+import auth from '@react-native-firebase/auth';
+import {Formik} from 'formik';
+import * as yup from 'yup';
 
 const Login = () => {
+  const loginValidationSchema = yup.object().shape({
+    email: yup
+      .string()
+      .email('Please enter valid email')
+      .required('Email address is requiered'),
+    password: yup
+      .string()
+      .min(6, ({min}) => `Password must be at least ${min} characters`)
+      .required('Password is required'),
+  });
+
+  const onLogin = values =>
+    auth()
+      .createUserWithEmailAndPassword(values.email, values.password)
+      .then(() => {
+        navigate('Home');
+      });
+
   return (
-    <ScrollView
-      style={styles.mainContainer}
-      showsVerticalScrollIndicator={false}>
-      <ImageBackground
-        source={require('../../assets/bg_img.png')}
-        style={styles.bgImg}>
-        <View style={styles.brandView}>
-          <MaterialCommunityIcons name="pokemon-go" size={100} color="white" />
-          <Text style={styles.brandViewText}>pokemon app</Text>
-        </View>
-      </ImageBackground>
-      <View style={styles.botView}>
-        <View style={{padding: 40}}>
-          <Text style={styles.textTitle}>Welcome</Text>
-          <View style={{flexDirection: 'row'}}>
-            <Text>Don't have an account?</Text>
-            <TouchableOpacity onPress={() => navigate('Register')}>
-              <Text style={styles.textRegister}> Register Now</Text>
-            </TouchableOpacity>
+    <Formik
+      initialValues={{email: '', password: ''}}
+      validateOnMount={true}
+      onSubmit={onLogin}
+      validationSchema={loginValidationSchema}>
+      {({
+        handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        touched,
+        errors,
+        isValid,
+      }) => (
+        <ScrollView
+          style={styles.mainContainer}
+          showsVerticalScrollIndicator={false}>
+          <ImageBackground
+            source={require('../../assets/bg_img.png')}
+            style={styles.bgImg}>
+            <View style={styles.brandView}>
+              <MaterialCommunityIcons
+                name="pokemon-go"
+                size={100}
+                color="white"
+              />
+              <Text style={styles.brandViewText}>pokemon app</Text>
+            </View>
+          </ImageBackground>
+          <View style={styles.botView}>
+            <View style={{padding: 40}}>
+              <Text style={styles.textTitle}>Welcome</Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text>Don't have an account?</Text>
+                <TouchableOpacity onPress={() => navigate('Register')}>
+                  <Text style={styles.textRegister}> Register Now</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.viewInput}>
+                <TextInput
+                  placeholder="Email"
+                  keyboardType="email-address"
+                  underlineColorAndroid={'#4632A1'}
+                  onChangeText={handleChange('email')}
+                  onBlur={handleBlur('email')}
+                  value={values.email}
+                />
+                {errors.email && touched.email && (
+                  <Text style={styles.errors}>{errors.email}</Text>
+                )}
+                <TextInput
+                  placeholder="Password"
+                  secureTextEntry={true}
+                  underlineColorAndroid={'#4632A1'}
+                  onChangeText={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  value={values.password}
+                />
+                {errors.password && touched.password && (
+                  <Text style={styles.errors}>{errors.password}</Text>
+                )}
+              </View>
+              <TouchableOpacity
+                style={styles.button}
+                disabled={!isValid}
+                onPress={handleSubmit}>
+                <Text
+                  style={[
+                    styles.loginButton,
+                    {backgroundColor: isValid ? '#4632A1' : '#CACFD2'},
+                  ]}>
+                  Login{' '}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.viewInput}>
-            <TextInput
-              placeholder="Email"
-              keyboardType="email-address"
-              underlineColorAndroid={'#4632A1'}
-            />
-            <TextInput
-              placeholder="Password"
-              secureTextEntry={true}
-              underlineColorAndroid={'#4632A1'}
-            />
-          </View>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.loginButton}>Login </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </ScrollView>
+        </ScrollView>
+      )}
+    </Formik>
   );
 };
 
@@ -103,7 +165,6 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     alignSelf: 'center',
-    backgroundColor: '#4632A1',
     width: Dimensions.get('window').width / 2,
     justifyContent: 'center',
     color: 'white',
@@ -111,5 +172,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingVertical: ms(5),
     borderRadius: ms(25),
+  },
+  errors: {
+    fontSize: 14,
+    color: 'red',
+    fontWeight: 'bold',
+    marginTop: ms(5),
   },
 });
