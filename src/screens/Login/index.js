@@ -30,7 +30,7 @@ const Login = () => {
 
   const onLogin = values =>
     auth()
-      .createUserWithEmailAndPassword(values.email, values.password)
+      .signInWithEmailAndPassword(values.email, values.password)
       .then(() => {
         navigate('Home');
       });
