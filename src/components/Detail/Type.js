@@ -24,7 +24,6 @@ export default Type;
 
 const styles = StyleSheet.create({
   content: {
-    marginTop: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',

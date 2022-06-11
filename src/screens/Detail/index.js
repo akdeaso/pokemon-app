@@ -1,12 +1,14 @@
 import {
   Alert,
+  Animated,
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {BASE_URL} from '../../helpers/api';
 import axios from 'axios';
 import Header from '../../components/Detail/Header';
@@ -66,16 +68,6 @@ const Detail = ({route}) => {
     }
   };
 
-  const catchPokemon = () => {
-    const catchRate = Math.floor(Math.random() * 10);
-    console.log(catchRate);
-    if (catchRate >= 6) {
-      Alert.alert(`${name} successfuly catched!`);
-    } else {
-      Alert.alert(`${name} ran away!`);
-    }
-  };
-
   return (
     <ScrollView>
       <Header name={name} type={type} image={image} order={order} />
@@ -83,13 +75,13 @@ const Detail = ({route}) => {
       <Abilities ability1={ability1} ability2={ability2} />
       <Characteristic height={height} weight={weight} species={species} />
       <Stats stats={stats} />
-      <View>
+      {/* <View>
         <TouchableOpacity onPress={catchPokemon}>
           <View style={styles.button}>
             <Text style={styles.txtButton}>Catch!</Text>
           </View>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </ScrollView>
   );
 };
